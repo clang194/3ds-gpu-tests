@@ -1,0 +1,34 @@
+.fvec projection[4], mixA, mixB, mixC
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias inclr v1
+.alias innrm v2
+.alias inuv v3
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	mov r1, inclr
+	mov r2.xyz, innrm
+	mov r2.w, zeros
+	mov r3, inuv
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	dp3 r4, r2, r2
+	rsq r4, r4
+	mul r2, r4, r2
+	mov r15, mixB
+	mad r5, r1, mixA, r15
+	mad r5, r2, mixC, r5
+	max r5, zeros, r5
+	min outclr, ones, r5
+	mov outtc0, r3
+	end
+.end

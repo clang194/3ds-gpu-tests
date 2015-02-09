@@ -1,0 +1,53 @@
+.fvec projection[4], modelView[4], lightDir, halfVec, lightColor, material[4]
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.alias ambient material[0]
+.alias diffuse material[1]
+.alias specular material[2]
+.alias emission material[3]
+.out outpos position
+.out outclr color
+.out outview view
+.out outnq normalquat
+.alias inpos v0
+.alias innrm v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 r1.x, modelView[0], r0
+	dp4 r1.y, modelView[1], r0
+	dp4 r1.z, modelView[2], r0
+	dp4 r1.w, modelView[3], r0
+	dp4 outpos.x, projection[0], r1
+	dp4 outpos.y, projection[1], r1
+	dp4 outpos.z, projection[2], r1
+	dp4 outpos.w, projection[3], r1
+	mov r2.xyz, innrm
+	mov r2.w, zeros
+	dp4 r3.x, modelView[0], r2
+	dp4 r3.y, modelView[1], r2
+	dp4 r3.z, modelView[2], r2
+	mov r3.w, zeros
+	dp3 r4, r3, r3
+	rsq r4, r4
+	mul r3, r4, r3
+	dp3 r5.x, -lightDir, r3
+	dp3 r5.y, -halfVec, r3
+	max r5, zeros, r5
+	dst r6, r5, r3
+	litp r7, r6
+	mul r8, lightColor, r7.yyyy
+	mov r15, emission
+	mad r9, r8, diffuse, r15
+	mul r8, lightColor, r7.zzzz
+	mad r9, r8, specular, r9
+	mad r9, r7.xxxx, ambient, r9
+	min outclr, ones, r9
+	mov outview.xyz, r1
+	mov outview.w, ones
+	mov outnq.xyz, r3
+	mov outnq.w, ones
+	end
+.end

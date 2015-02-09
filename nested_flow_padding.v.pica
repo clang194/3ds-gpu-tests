@@ -1,0 +1,49 @@
+.fvec projection[4], routeA, routeB, routeC
+.consti loopSpec(6, 0, 1, 0)
+.bool useB
+.constf basis(0.0, 1.0, -1.0, 0.1666666716337204)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, inarg
+	mov r15, ones
+	for loopSpec
+		cmp r1, gt, le, r15
+		ifc cmp.x
+			call path_a
+		.else
+			ifu useB
+				call path_b
+			.else
+				call path_c
+			.end
+		.end
+		breakc cmp.y
+	.end
+	max r1, zeros, r1
+	min outclr, ones, r1
+	end
+.end
+.proc path_a
+	mov r14, routeA
+	mad r1, r1, basis.wwww, r14
+.end
+.proc path_b
+	mov r14, routeB
+	mad r1, r1, basis.wwww, r14
+.end
+.proc path_c
+	mov r14, routeC
+	mad r1, r1, basis.wwww, r14
+.end

@@ -1,0 +1,39 @@
+.fvec projection[4]
+.constfa lut[8]
+.constfa (0.0000, 0.03125, 0.0625, 0.1250)
+.constfa (0.1875, 0.25000, 0.3125, 0.3750)
+.constfa (0.4375, 0.50000, 0.5625, 0.6250)
+.constfa (0.6875, 0.75000, 0.8125, 0.8750)
+.constfa (0.9375, 1.00000, 0.9375, 0.8750)
+.constfa (0.8125, 0.75000, 0.6875, 0.6250)
+.constfa (0.5625, 0.50000, 0.4375, 0.3750)
+.constfa (0.3125, 0.25000, 0.1875, 0.1250)
+.end
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias inidx v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mova a0.x, inidx.x
+	mov r1, lut[a0.x]
+	add r2, basis.wwww, inidx
+	mova a0.y, r2.y
+	mov r3, lut[a0.y+1]
+	add r4, r1, r3
+	mul r4, basis.wwww, r4
+	min outclr, ones, r4
+	mov outtc0.xy, r1.xy
+	mov outtc0.zw, r3.zw
+	end
+.end
