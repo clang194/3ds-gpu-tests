@@ -1,0 +1,33 @@
+.fvec projection[4], nearColor, farColor, wAdjust
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias intc v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 r1.x, projection[0], r0
+	dp4 r1.y, projection[1], r0
+	dp4 r1.z, projection[2], r0
+	dp4 r1.w, projection[3], r0
+	mov r15, wAdjust
+	add r1.w, r1.wwww, r15
+	mov outpos, r1
+	mov r2.x, r1.w
+	mov r2.yzw, r1
+	mov r15, zeros
+	cmp r2, le, gt, r15
+	ifc cmp.x
+		mov r3, farColor
+	.else
+		mov r3, nearColor
+	.end
+	min outclr, ones, r3
+	mov outtc0, intc
+	end
+.end
