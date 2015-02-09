@@ -1,0 +1,37 @@
+.fvec projection[4], baseColor
+.setf c92(0.03125, 0.0625, 0.125, 0.25)
+.setf c93(0.5, 0.75, 1.0, 0.875)
+.setf c94(1.0, -1.0, 0.5, -0.5)
+.setf c95(0.2, 0.4, 0.6, 0.8)
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.alias hi0 c92
+.alias hi1 c93
+.alias hi2 c94
+.alias hi3 c95
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias intc v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, hi0
+	add r1, hi1, r1
+	mov r15, hi2
+	mul r2, hi3, r15
+	add r3, r1, r2
+	mul r3, basis.wwww, r3
+	add r3, baseColor, r3
+	max r3, zeros, r3
+	min outclr, ones, r3
+	mov outtc0, intc
+	end
+.end

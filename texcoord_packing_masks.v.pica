@@ -1,0 +1,33 @@
+.fvec projection[4], texMatrix[3], colorScale
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0.xy
+.out - texcoord0w outtc0.z
+.out outtc1 texcoord1.xy
+.out outtc2 texcoord2
+.alias inpos v0
+.alias inclr v1
+.alias intc v2
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	dp4 outtc0.x, texMatrix[0], intc
+	dp4 outtc0.y, texMatrix[1], intc
+	dp4 outtc0.z, texMatrix[2], intc
+	mov outtc0.w, ones
+	mov outtc1.xy, intc.zw
+	mov outtc1.zw, basis.yx
+	mov outtc2, intc.wzyx
+	mul r1, colorScale, inclr
+	max r1, zeros, r1
+	min outclr, ones, r1
+	end
+.end

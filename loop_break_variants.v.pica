@@ -1,0 +1,32 @@
+.fvec projection[4], stepColor, limitColor, fallbackColor
+.consti loopSpec(8, 0, 1, 0)
+.constf basis(0.0, 1.0, -1.0, 0.125)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, inarg
+	mov r13, fallbackColor
+	mov r15, limitColor
+	for loopSpec
+		mad r1, r1, stepColor, r13
+		cmp r1, gt, lt, r15
+		ifc cmp.x
+			break
+		.end
+		breakc cmp.y
+	.end
+	max r1, zeros, r1
+	min outclr, ones, r1
+	end
+.end

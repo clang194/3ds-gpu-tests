@@ -1,0 +1,38 @@
+.fvec projection[4], lowColor, midColor, highColor
+.setb b14 true
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, midColor
+	mov r15, basis.wwww
+	cmp inarg, gt, lt, r15
+	callc cmp.x, take_high
+	call refresh_flags
+	jmpc cmp.y, take_low
+	jmpu b14, done
+take_low:
+	mov r1, lowColor
+	jmpu b14, done
+done:
+	min outclr, ones, r1
+	end
+.end
+.proc take_high
+	mov r1, highColor
+.end
+.proc refresh_flags
+	mov r14, zeros
+	cmp inarg, le, ge, r14
+.end

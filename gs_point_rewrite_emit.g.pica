@@ -1,0 +1,47 @@
+.gsh point c0
+.fvec projection[4], firstOffset, rewriteOffset, tail[4], altColor
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.entry gmain
+.proc gmain
+	mov r9, v1
+	mov r10, v2
+	setemit 0
+	add r8, firstOffset, v0
+	call emit_vertex
+	setemit 0
+	add r8, rewriteOffset, v0
+	mov r9, altColor
+	call emit_vertex
+	emit
+	mov r9, v1
+	setemit 1
+	add r8, tail[0], v0
+	call emit_vertex
+	emit
+	setemit 2, prim
+	add r8, tail[1], v0
+	call emit_vertex
+	emit
+	setemit 1
+	add r8, tail[2], v0
+	call emit_vertex
+	emit
+	setemit 2, prim inv
+	add r8, tail[3], v0
+	call emit_vertex
+	emit
+	end
+.end
+.proc emit_vertex
+	dp4 outpos.x, projection[0], r8
+	dp4 outpos.y, projection[1], r8
+	dp4 outpos.z, projection[2], r8
+	dp4 outpos.w, projection[3], r8
+	mov outclr, r9
+	mov outtc0, r10
+.end

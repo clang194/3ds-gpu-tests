@@ -1,0 +1,25 @@
+.fvec modelView[4]
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.out outaux dummy
+.alias inpos v0
+.alias inclr v1
+.alias intc v2
+.alias inaux v3
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, modelView[0], r0
+	dp4 outpos.y, modelView[1], r0
+	dp4 outpos.z, modelView[2], r0
+	dp4 outpos.w, modelView[3], r0
+	mov outclr, inclr
+	mov outtc0, intc
+	mov outaux, inaux
+	end
+.end
