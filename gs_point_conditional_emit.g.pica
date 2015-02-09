@@ -1,0 +1,73 @@
+.gsh point c0
+.fvec projection[4], smallFan[3], largeFan[6]
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.entry gmain
+.proc gmain
+	dp4 r0.x, v3, v3
+	mov r15, basis.wwww
+	cmp r0, gt, le, r15
+	jmpc !cmp.x, emit_small
+	call emit_large
+	jmpc cmp.x, done
+emit_small:
+	call emit_small_proc
+done:
+	end
+.end
+.proc emit_large
+	mov r9, v1
+	mov r10, v2
+	setemit 0
+	add r8, largeFan[0], v0
+	call emit_vertex
+	emit
+	setemit 1
+	add r8, largeFan[1], v0
+	call emit_vertex
+	emit
+	setemit 2, prim
+	add r8, largeFan[2], v0
+	call emit_vertex
+	emit
+	setemit 0
+	add r8, largeFan[3], v0
+	call emit_vertex
+	emit
+	setemit 1
+	add r8, largeFan[4], v0
+	call emit_vertex
+	emit
+	setemit 2, prim
+	add r8, largeFan[5], v0
+	call emit_vertex
+	emit
+.end
+.proc emit_small_proc
+	mov r9, v1
+	mov r10, v2
+	setemit 0
+	add r8, smallFan[0], v0
+	call emit_vertex
+	emit
+	setemit 1
+	add r8, smallFan[1], v0
+	call emit_vertex
+	emit
+	setemit 2, prim
+	add r8, smallFan[2], v0
+	call emit_vertex
+	emit
+.end
+.proc emit_vertex
+	dp4 outpos.x, projection[0], r8
+	dp4 outpos.y, projection[1], r8
+	dp4 outpos.z, projection[2], r8
+	dp4 outpos.w, projection[3], r8
+	mov outclr, r9
+	mov outtc0, r10
+.end

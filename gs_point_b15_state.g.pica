@@ -1,0 +1,50 @@
+.gsh point c0
+.fvec projection[4], coldOffset, warmOffset, fan[3]
+.bool forceWarm
+.constf basis(0.0, 1.0, -1.0, 0.25)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.entry gmain
+.proc gmain
+	mov r9, v1
+	mov r10, v2
+	ifu b15
+		add r8, warmOffset, v0
+	.else
+		add r8, coldOffset, v0
+	.end
+	jmpu !forceWarm, keep_color
+	add r9, basis.wwww, v1
+keep_color:
+	setemit 0
+	call emit_vertex
+	emit
+	setemit 1
+	add r8, fan[0], v0
+	call emit_vertex
+	emit
+	setemit 2, prim
+	add r8, fan[1], v0
+	call emit_vertex
+	emit
+	setemit 1
+	add r8, fan[2], v0
+	call emit_vertex
+	emit
+	setemit 2, prim inv
+	add r8, coldOffset, v0
+	call emit_vertex
+	emit
+	end
+.end
+.proc emit_vertex
+	dp4 outpos.x, projection[0], r8
+	dp4 outpos.y, projection[1], r8
+	dp4 outpos.z, projection[2], r8
+	dp4 outpos.w, projection[3], r8
+	mov outclr, r9
+	mov outtc0, r10
+.end
