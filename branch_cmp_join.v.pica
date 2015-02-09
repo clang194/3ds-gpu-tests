@@ -1,0 +1,47 @@
+.fvec projection[4], ramp[4]
+.constf basis(0.0, 1.0, -1.0, 0.125)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	dp4 r1.x, ramp[0], inarg
+	dp4 r1.y, ramp[1], inarg
+	dp4 r1.z, ramp[2], inarg
+	dp4 r1.w, ramp[3], inarg
+	mov r15, zeros
+	cmp r1, ge, lt, r15
+	ifc cmp.x && !cmp.y
+		call positive_path
+	.else
+		call mixed_path
+	.end
+	mov r15, ones
+	cmp r2, gt, le, r15
+	callc cmp.x || cmp.y, clamp_path
+	min outclr, ones, r2
+	end
+.end
+.proc positive_path
+	max r2, zeros, r1
+	mov r15, ramp[0]
+	mad r2, r2, basis.wwww, r15
+.end
+.proc mixed_path
+	add r2, ones, -r1
+	max r2, zeros, r2
+	mov r15, ramp[1]
+	mad r2, r2, basis.wwww, r15
+.end
+.proc clamp_path
+	min r2, ones, r2
+.end

@@ -1,0 +1,33 @@
+.fvec projection[4], m0, m1, m2, m3, m4, m5, m6, m7
+.constf basis(0.0, 1.0, -1.0, 0.25)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, inarg
+	mov r15, basis.xxxx
+	mad r2.xyzw, r1.xyzw, m0.xyzw, r15.xxxx
+	mad r3.xyzw, r2.wzyx, m1.yxwz, r1.zwxy
+	mad r4.xz, r3.yyww, m2.zwxy, r2.xxzz
+	mad r5.yw, r4.zzxx, m3.wzyx, r3.wwyy
+	mad r6.xyz, r5.yxwz, m4.xxyy, r4.zwxy
+	mad r7.yzw, r6.wwxx, m5.zzww, r5.xyzw
+	mad r8.xyw, r7.zxyw, m6.yzwx, r6.wzyx
+	mad r9.xzw, r8.wyxz, m7.wxyz, r7.yxwz
+	mad r10.xy, r9.zzxx, m0.zwxy, r8.yyww
+	mad r11.zw, r10.xyxy, m1.wzyx, r9.xxyy
+	add r12, r11, r10
+	max r12, zeros, r12
+	min outclr, ones, r12
+	end
+.end

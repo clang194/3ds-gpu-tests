@@ -1,0 +1,39 @@
+.fvec projection[4], colorA, colorB, colorC
+.bool routeA, routeB, routeC
+.constf basis(0.0, 1.0, -1.0, 0.25)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, inarg
+	callu routeA, apply_a
+	callu routeB, apply_b
+	jmpu !routeC, skip_c
+	call apply_c
+skip_c:
+	max r1, zeros, r1
+	min outclr, ones, r1
+	end
+.end
+.proc apply_a
+	mov r15, colorA
+	mad r1, r1, basis.wwww, r15
+.end
+.proc apply_b
+	mul r2, colorB, r1
+	add r1, colorB, r2
+.end
+.proc apply_c
+	mov r15, basis.yyyy
+	mad r1, r1, colorC, r15
+.end

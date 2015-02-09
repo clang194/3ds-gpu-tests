@@ -1,0 +1,25 @@
+.fvec projection[4], lowClip, highClip, bias
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	max r1, lowClip, inarg
+	min r2, highClip, r1
+	sge r3, r2, bias
+	slt r4, r2, bias
+	add r5, r3, -r4
+	max r5, zeros, r5
+	min outclr, ones, r5
+	end
+.end

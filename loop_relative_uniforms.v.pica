@@ -1,0 +1,31 @@
+.fvec projection[4], palette[12], weights[12]
+.consti loopSpec(12, 0, 1, 0)
+.constf basis(0.0, 1.0, -1.0, 0.0625)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r1, zeros
+	mov r15, ones
+	for loopSpec
+		dp4 r2.x, palette[aL], r0
+		dp4 r2.y, weights[aL], inarg
+		add r2.zw, basis.wwww, r2.xyxy
+		mad r1, r2, weights[aL], r1
+		cmp r1, gt, gt, r15
+		breakc cmp.x && cmp.y
+	.end
+	max r1, zeros, r1
+	min outclr, ones, r1
+	end
+.end

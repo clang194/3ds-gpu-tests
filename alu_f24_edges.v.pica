@@ -1,0 +1,40 @@
+.fvec projection[4]
+.constf edge0(0.0, 1.0, -1.0, 0.5)
+.constf edge1(inf, -inf, nan, 1e-39)
+.constf edge2(65504.0, -65504.0, 0.000000059604644775390625, -0.000000059604644775390625)
+.alias zeros edge0.xxxx
+.alias ones edge0.yyyy
+.alias negones edge0.zzzz
+.out outpos position
+.out outclr color
+.alias inpos v0
+.alias inarg v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r14, edge1
+	mov r15, zeros
+	mul r1, edge1, r15
+	add r2, edge1, -r14
+	max r3, edge1, r15
+	mov r15, ones
+	min r4, edge1, r15
+	mov r15, edge0.wwww
+	mul r5, edge2, r15
+	add r6, r5, -r5
+	mov r15, zeros
+	cmp r6, eq, ne, r15
+	ifc cmp.x || cmp.y
+		mov r7, r3
+	.else
+		mov r7, r4
+	.end
+	max r7, r7, inarg
+	min outclr, ones, r7
+	end
+.end
