@@ -1,0 +1,14 @@
+.nodvle
+.proc shared_norm_r8_r9
+	dp3 r9, r8, r8
+	rsq r9, r9
+	mul r9, r9, r8
+.end
+.proc shared_clamp_r9_r10
+	max r10, r14, r9
+	min r10, r15, r10
+.end
+.proc shared_lerp_r8_r9_r10
+	add r11, r9, -r8
+	mad r10, r10, r11, r8
+.end

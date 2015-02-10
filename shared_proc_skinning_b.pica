@@ -1,0 +1,39 @@
+.fvec projection[4], boneMtx[8], colorLow, colorHigh, viewMtx[3]
+.constf basis(0.0, 1.0, -1.0, 0.25)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outview view
+.alias inpos v0
+.alias inaux v1
+.alias inidx v2
+.entry skin_b
+.proc skin_b
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	mova a0.x, inidx.y
+	dp4 r1.x, boneMtx[a0.x+3], r0
+	dp4 r1.y, boneMtx[a0.x+4], r0
+	dp4 r1.z, boneMtx[a0.x+5], r0
+	mov r1.w, ones
+	dp4 outpos.x, projection[0], r1
+	dp4 outpos.y, projection[1], r1
+	dp4 outpos.z, projection[2], r1
+	dp4 outpos.w, projection[3], r1
+	mov r8.xyz, inaux
+	mov r8.w, zeros
+	call shared_norm_r8_r9
+	mov r14, zeros
+	mov r15, ones
+	call shared_clamp_r9_r10
+	mov r8, colorLow
+	mov r9, colorHigh
+	call shared_lerp_r8_r9_r10
+	mov outclr, r10
+	dp4 outview.x, viewMtx[0], r1
+	dp4 outview.y, viewMtx[1], r1
+	dp4 outview.z, viewMtx[2], r1
+	mov outview.w, ones
+	end
+.end

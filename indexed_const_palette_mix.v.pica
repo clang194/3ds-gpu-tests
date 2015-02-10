@@ -1,0 +1,48 @@
+.fvec projection[4], tint
+.constfa palette[10]
+.constfa (0.0000, 0.0625, 0.1250, 1.0000)
+.constfa (0.1875, 0.2500, 0.3125, 1.0000)
+.constfa (0.3750, 0.4375, 0.5000, 1.0000)
+.constfa (0.5625, 0.6250, 0.6875, 1.0000)
+.constfa (0.7500, 0.8125, 0.8750, 1.0000)
+.constfa (0.9375, 0.8750, 0.8125, 1.0000)
+.constfa (0.7500, 0.6875, 0.6250, 1.0000)
+.constfa (0.5625, 0.5000, 0.4375, 1.0000)
+.constfa (0.3750, 0.3125, 0.2500, 1.0000)
+.constfa (0.1875, 0.1250, 0.0625, 1.0000)
+.end
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias inidx v1
+.alias intc v2
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	flr r1, inidx
+	add r2, inidx, -r1
+	mova a0.x, r1.x
+	mov r3, palette[a0.x]
+	add r4, basis.wwww, r1.yyyy
+	mova a0.y, r4.y
+	mov r5, palette[a0.y+1]
+	call mix_palette
+	mov outtc0, intc
+	end
+.end
+.proc mix_palette
+	add r6, r5, -r3
+	mad r7, r2.xxxx, r6, r3
+	mul r7, tint, r7
+	max r7, zeros, r7
+	min outclr, ones, r7
+.end

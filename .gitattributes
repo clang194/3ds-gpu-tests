@@ -1,1 +1,2 @@
 *.pica linguist-language=Assembly
+*.shlist linguist-language=Assembly
