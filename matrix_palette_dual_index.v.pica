@@ -1,0 +1,32 @@
+.fvec projection[4], matrices[16], palette[16]
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias inidx v1
+.alias intc v2
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	flr r1, inidx
+	mova a0.x, r1.x
+	dp4 r2.x, matrices[a0.x+0], r0
+	dp4 r2.y, matrices[a0.x+1], r0
+	dp4 r2.z, matrices[a0.x+2], r0
+	mov r2.w, ones
+	add r3, basis.wwww, r1
+	mova a0.y, r3.y
+	mov r4, palette[a0.y]
+	dp4 outpos.x, projection[0], r2
+	dp4 outpos.y, projection[1], r2
+	dp4 outpos.z, projection[2], r2
+	dp4 outpos.w, projection[3], r2
+	max r4, zeros, r4
+	min outclr, ones, r4
+	mov outtc0, intc
+	end
+.end

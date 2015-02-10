@@ -1,0 +1,33 @@
+.fvec projection[4], colorScale
+.constf weird(nan, inf, -inf, 1e-39)
+.constf basis(0.0, 1.0, -1.0, 0.5)
+.alias zeros basis.xxxx
+.alias ones basis.yyyy
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.alias inpos v0
+.alias intc v1
+.entry main
+.proc main
+	mov r0.xyz, inpos
+	mov r0.w, ones
+	dp4 outpos.x, projection[0], r0
+	dp4 outpos.y, projection[1], r0
+	dp4 outpos.z, projection[2], r0
+	dp4 outpos.w, projection[3], r0
+	mov r13, weird
+	mov r14, zeros
+	max r1, weird, r14
+	max r2, basis.xxxx, r13
+	min r3, weird, r14
+	min r4, basis.yyyy, r13
+	add r5, r1, r2
+	add r6, r3, r4
+	add r7, r5, -r6
+	mul r8, colorScale, r7
+	max r8, zeros, r8
+	min outclr, ones, r8
+	mov outtc0, intc
+	end
+.end

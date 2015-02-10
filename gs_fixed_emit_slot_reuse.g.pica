@@ -1,0 +1,64 @@
+.gsh fixed c48 c0 4
+.fvec projection[4], adjust
+.constf uv0(0.0, 0.0, 0.0, 1.0)
+.constf uv1(1.0, 0.0, 0.0, 1.0)
+.constf uv2(1.0, 1.0, 0.0, 1.0)
+.constf uv3(0.0, 1.0, 0.0, 1.0)
+.out outpos position
+.out outclr color
+.out outtc0 texcoord0
+.entry gmain
+.proc gmain
+	setemit 0
+	mov r8, c0
+	mov r9, c1
+	mov r10, uv0
+	call emit_vertex
+	emit
+	setemit 1
+	mov r8, c2
+	mov r9, c3
+	mov r10, uv1
+	call emit_vertex
+	emit
+	setemit 1
+	mov r15, c2
+	add r8, adjust, r15
+	mov r9, c3
+	mov r10, uv1
+	call emit_vertex
+	emit
+	setemit 2, prim
+	mov r8, c4
+	mov r9, c5
+	mov r10, uv2
+	call emit_vertex
+	emit
+	setemit 0
+	mov r8, c0
+	mov r9, c1
+	mov r10, uv0
+	call emit_vertex
+	emit
+	setemit 1
+	mov r8, c4
+	mov r9, c5
+	mov r10, uv2
+	call emit_vertex
+	emit
+	setemit 2, prim inv
+	mov r8, c6
+	mov r9, c7
+	mov r10, uv3
+	call emit_vertex
+	emit
+	end
+.end
+.proc emit_vertex
+	dp4 outpos.x, projection[0], r8
+	dp4 outpos.y, projection[1], r8
+	dp4 outpos.z, projection[2], r8
+	dp4 outpos.w, projection[3], r8
+	mov outclr, r9
+	mov outtc0, r10
+.end
